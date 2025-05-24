@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ajuda para Termo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #1e1e2f;
+      --fg: #ffffff;
+      --green: #6aaa64; /* verde correto */
+      --yellow: #c9b458; /* amarelo correto */
+      --gray: #787c7e; /* cinza correto */
+      --input-bg: #2e2e4d;
+      --border: #3c3c5c;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background-color: #2a2a45;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 30px;
+      color: var(--green);
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .letter-inputs {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .letter-inputs.correct input {
+      background-color: var(--green);
+      border: 1px solid var(--green);
+      color: white;
+    }
+
+    .letter-inputs.wrong-place input {
+      background-color: var(--yellow);
+      border: 1px solid var(--yellow);
+      color: white;
+    }
+
+    .letter-inputs input {
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      text-align: center;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--input-bg);
+      color: var(--fg);
+      text-transform: lowercase;
+    }
+
+    input[type="text"].excluded {
+      background-color: var(--gray);
+      border: 1px solid var(--gray);
+      color: white;
+      padding: 10px;
+      width: 100%;
+      margin-top: 6px;
+      border-radius: 8px;
+      font-size: 18px;
+      text-transform: lowercase;
+      font-weight: 600;
+      letter-spacing: 2px;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #568d4a;
+    }
+
+    .results {
+      margin-top: 30px;
+    }
+
+    ul {
+      padding-left: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      user-select: text;
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ff6b6b;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ajuda para Termo</h1>
+
+    <label>Letras nas posições corretas:</label>
+    <div class="letter-inputs correct">
+      <input type="text" maxlength="1" id="l0" />
+      <input type="text" maxlength="1" id="l1" />
+      <input type="text" maxlength="1" id="l2" />
+      <input type="text" maxlength="1" id="l3" />
+      <input type="text" maxlength="1" id="l4" />
+    </div>
+
+    <label>Letras em posições erradas:</label>
+    <div class="letter-inputs wrong-place">
+      <input type="text" maxlength="1" id="b0" />
+      <input type="text" maxlength="1" id="b1" />
+      <input type="text" maxlength="1" id="b2" />
+      <input type="text" maxlength="1" id="b3" />
+      <input type="text" maxlength="1" id="b4" />
+    </div>
+
+    <label for="excludes">Letras proibidas:</label>
+    <input type="text" id="excludes" class="excluded" placeholder="Ex: emt" />
+
+    <button onclick="buscarPalavras()">Buscar</button>
+
+    <div class="error" id="error"></div>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    let palavras = [];
+
+    fetch('database.txt')
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.text();
+      })
+      .then(text => {
+        // Assume uma palavra por linha, filtra só as de 5 letras
+        palavras = text.split('\n')
+          .map(p => p.trim().toLowerCase())
+          .filter(p => p.length === 5);
+
+        // console.log('Palavras carregadas:', palavras.slice(0, 10));
+      })
+      .catch(err => {
+        document.getElementById('error').textContent = "Erro ao carregar o dicionário: " + err.message;
+      });
+
+    // Função para remover acentos
+    function removerAcentos(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function buscarPalavras() {
+      document.getElementById('error').textContent = ""; // limpa erro
+      const corretas = [];
+      for (let i = 0; i < 5; i++) {
+        let val = document.getElementById('l' + i).value.toLowerCase();
+        corretas.push(val);
+      }
+
+      const erradasPos = [];
+      for (let i = 0; i < 5; i++) {
+        let val = document.getElementById('b' + i).value.toLowerCase();
+        erradasPos.push(val);
+      }
+
+      const excludes = document.getElementById('excludes').value.toLowerCase();
+
+      // Verifica se tudo está vazio para impedir busca total
+      const tudoVazio = corretas.every(c => c === "") &&
+                        erradasPos.every(c => c === "") &&
+                        excludes.trim() === "";
+
+      if (tudoVazio) {
+        document.getElementById('error').textContent = "Por favor, preencha pelo menos um critério para buscar.";
+        document.getElementById('results').innerHTML = "";
+        return;
+      }
+
+      // Map letras em posições erradas, ignorando inputs vazios
+      const badPositions = {};
+      for (let i = 0; i < 5; i++) {
+        const letra = erradasPos[i];
+        if (letra && letra !== '') {
+          if (!badPositions[letra]) badPositions[letra] = [];
+          badPositions[letra].push(i);
+        }
+      }
+
+      // Cria regex para letras corretas (posições certas)
+      let pattern = '';
+      for (let i = 0; i < 5; i++) {
+        pattern += corretas[i] ? corretas[i] : '.';
+      }
+      const regex = new RegExp('^' + pattern + '$');
+
+      // Remove acentos das letras proibidas para comparar mais fácil
+      const excludesSemAcento = removerAcentos(excludes);
+
+      const resultados = palavras.filter(palavra => {
+        // Regex para posição correta
+        if (!regex.test(palavra)) return false;
+
+        // Verifica letras proibidas (sem acento)
+        for (let letra of excludesSemAcento) {
+          if (removerAcentos(palavra).includes(letra)) return false;
+        }
+
+        // Verifica letras obrigatórias nas posições erradas e se elas aparecem na palavra
+        for (let letra in badPositions) {
+          if (!removerAcentos(palavra).includes(letra)) return false; // tem que ter essa letra
+          for (let pos of badPositions[letra]) {
+            if (palavra[pos] === letra) return false; // não pode estar na posição proibida
+          }
+        }
+
+        // Verifica letras obrigatórias corretas (não vazias)
+        for (let i = 0; i < 5; i++) {
+          if (corretas[i] && palavra[i] !== corretas[i]) return false;
+        }
+
+        return true;
+      });
+
+      const div = document.getElementById('results');
+      div.innerHTML = "";
+
+      if (resultados.length === 0) {
+        div.textContent = "Nenhuma palavra encontrada.";
+        return;
+      }
+
+      const ul = document.createElement('ul');
+      for (const palavra of resultados) {
+        const li = document.createElement('li');
+        li.textContent = palavra;
+        ul.appendChild(li);
+      }
+
+      div.appendChild(ul);
+    }
+  </script>
+</body>
+</html>
