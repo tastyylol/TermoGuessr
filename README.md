@@ -25,15 +25,6 @@ Esta ferramenta foi criada para facilitar o raciocínio do jogador, permitindo q
 
 ---
 
-## 📁 Estrutura do projeto
-
-Termo/
-│
-├── index.html # Interface e lógica principal da aplicação
-└── palavras.txt # Dicionário de palavras de 5 letras (formato texto simples)
-
----
-
 ## 🚀 Como usar
 
 1. Clone ou baixe este repositório.
