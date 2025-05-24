@@ -8,9 +8,9 @@
     :root {
       --bg: #1e1e2f;
       --fg: #ffffff;
-      --green: #6aaa64; /* verde correto */
-      --yellow: #c9b458; /* amarelo correto */
-      --gray: #787c7e; /* cinza correto */
+      --green: #6aaa64;
+      --yellow: #c9b458;
+      --gray: #787c7e;
       --input-bg: #2e2e4d;
       --border: #3c3c5c;
     }
@@ -172,24 +172,20 @@
         return res.text();
       })
       .then(text => {
-        // Assume uma palavra por linha, filtra só as de 5 letras
         palavras = text.split('\n')
           .map(p => p.trim().toLowerCase())
           .filter(p => p.length === 5);
-
-        // console.log('Palavras carregadas:', palavras.slice(0, 10));
       })
       .catch(err => {
         document.getElementById('error').textContent = "Erro ao carregar o dicionário: " + err.message;
       });
 
-    // Função para remover acentos
     function removerAcentos(str) {
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
     function buscarPalavras() {
-      document.getElementById('error').textContent = ""; // limpa erro
+      document.getElementById('error').textContent = "";
       const corretas = [];
       for (let i = 0; i < 5; i++) {
         let val = document.getElementById('l' + i).value.toLowerCase();
@@ -204,7 +200,6 @@
 
       const excludes = document.getElementById('excludes').value.toLowerCase();
 
-      // Verifica se tudo está vazio para impedir busca total
       const tudoVazio = corretas.every(c => c === "") &&
                         erradasPos.every(c => c === "") &&
                         excludes.trim() === "";
@@ -215,7 +210,6 @@
         return;
       }
 
-      // Map letras em posições erradas, ignorando inputs vazios
       const badPositions = {};
       for (let i = 0; i < 5; i++) {
         const letra = erradasPos[i];
@@ -225,34 +219,28 @@
         }
       }
 
-      // Cria regex para letras corretas (posições certas)
       let pattern = '';
       for (let i = 0; i < 5; i++) {
         pattern += corretas[i] ? corretas[i] : '.';
       }
       const regex = new RegExp('^' + pattern + '$');
 
-      // Remove acentos das letras proibidas para comparar mais fácil
       const excludesSemAcento = removerAcentos(excludes);
 
       const resultados = palavras.filter(palavra => {
-        // Regex para posição correta
         if (!regex.test(palavra)) return false;
 
-        // Verifica letras proibidas (sem acento)
         for (let letra of excludesSemAcento) {
           if (removerAcentos(palavra).includes(letra)) return false;
         }
 
-        // Verifica letras obrigatórias nas posições erradas e se elas aparecem na palavra
         for (let letra in badPositions) {
-          if (!removerAcentos(palavra).includes(letra)) return false; // tem que ter essa letra
+          if (!removerAcentos(palavra).includes(letra)) return false;
           for (let pos of badPositions[letra]) {
-            if (palavra[pos] === letra) return false; // não pode estar na posição proibida
+            if (palavra[pos] === letra) return false;
           }
         }
 
-        // Verifica letras obrigatórias corretas (não vazias)
         for (let i = 0; i < 5; i++) {
           if (corretas[i] && palavra[i] !== corretas[i]) return false;
         }
@@ -276,21 +264,22 @@
       }
 
       div.appendChild(ul);
-      }
-    // Navegação automática entre campos de letra
-  document.querySelectorAll('.letter-inputs input').forEach((input, index, list) => {
-    input.addEventListener('input', () => {
-      if (input.value.length === 1 && index < list.length - 1) {
-        list[index + 1].focus();
-      }
-    });
+    }
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && input.value === '' && index > 0) {
-        list[index - 1].focus();
-      }
+    // Escrita contínua
+    document.querySelectorAll('.letter-inputs input').forEach((input, index, list) => {
+      input.addEventListener('input', () => {
+        if (input.value.length === 1 && index < list.length - 1) {
+          list[index + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value === '' && index > 0) {
+          list[index - 1].focus();
+        }
+      });
     });
-  });
   </script>
 </body>
 </html>
