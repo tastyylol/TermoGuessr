@@ -276,7 +276,21 @@
       }
 
       div.appendChild(ul);
-    }
+      }
+    // Navegação automática entre campos de letra
+  document.querySelectorAll('.letter-inputs input').forEach((input, index, list) => {
+    input.addEventListener('input', () => {
+      if (input.value.length === 1 && index < list.length - 1) {
+        list[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && input.value === '' && index > 0) {
+        list[index - 1].focus();
+      }
+    });
+  });
   </script>
 </body>
 </html>
