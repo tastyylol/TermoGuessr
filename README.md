@@ -41,7 +41,7 @@ Esta ferramenta foi criada para facilitar o raciocínio do jogador, permitindo q
 
 ## 🔧 Detalhes técnicos
 
-- **Carregamento das palavras:** O arquivo `palavras.txt` contém uma lista de palavras de 5 letras, uma por linha, carregadas via fetch API.
+- **Carregamento das palavras:** O arquivo `database.txt` contém uma lista de palavras de 5 letras, uma por linha, carregadas via fetch API.
 - **Filtragem:** O sistema utiliza expressões regulares para filtrar posições corretas e aplica regras para letras em posições erradas e proibidas.
 - **Remoção de acentos:** Para facilitar a comparação, as letras são normalizadas removendo acentos, garantindo correspondência correta mesmo que o usuário não digite acentos.
 - **Validação:** A busca é bloqueada se não houver nenhuma entrada, evitando retorno de todas as palavras.
