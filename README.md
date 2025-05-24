@@ -53,7 +53,7 @@ Esta ferramenta foi criada para facilitar o raciocínio do jogador, permitindo q
 
 Você pode acessar a ferramenta online hospedada via GitHub Pages:
 
-[https://seu-usuario.github.io/Termo/](https://seu-usuario.github.io/Termo/)
+[https://tastyylol.github.io/TermoGuessr/](https://tastyylol.github.io/TermoGuessr/)
 
 ---
 
