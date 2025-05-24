@@ -184,6 +184,14 @@
       return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
+    function embaralhar(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
     function buscarPalavras() {
       document.getElementById('error').textContent = "";
       const corretas = [];
@@ -224,10 +232,9 @@
         pattern += corretas[i] ? corretas[i] : '.';
       }
       const regex = new RegExp('^' + pattern + '$');
-
       const excludesSemAcento = removerAcentos(excludes);
 
-      const resultados = palavras.filter(palavra => {
+      let resultados = palavras.filter(palavra => {
         if (!regex.test(palavra)) return false;
 
         for (let letra of excludesSemAcento) {
@@ -248,6 +255,8 @@
         return true;
       });
 
+      resultados = embaralhar(resultados).slice(0, 10);
+
       const div = document.getElementById('results');
       div.innerHTML = "";
 
@@ -267,16 +276,10 @@
     }
 
     // Escrita contínua
-    document.querySelectorAll('.letter-inputs input').forEach((input, index, list) => {
-      input.addEventListener('input', () => {
-        if (input.value.length === 1 && index < list.length - 1) {
-          list[index + 1].focus();
-        }
-      });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.value === '' && index > 0) {
-          list[index - 1].focus();
+    document.querySelectorAll('.letter-inputs input').forEach((input, index, arr) => {
+      input.addEventListener('input', (e) => {
+        if (input.value.length === 1 && index < arr.length - 1) {
+          arr[index + 1].focus();
         }
       });
     });
